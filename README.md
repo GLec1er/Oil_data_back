@@ -19,6 +19,24 @@ The [GitHub Pages showcase](https://glec1er.github.io/Oil_data_back/) is the qui
 
 The playground is deliberately a front-end simulation. It makes the product direction visible without pretending that production telemetry already exists.
 
+## Visual map
+
+### Telemetry, at a glance
+
+<p align="center">
+  <img src="docs/assets/telemetry-chart.svg" alt="Simulated North-07 telemetry chart showing pressure, flow, and water cut over 24 hours" width="960" />
+</p>
+
+<p align="center"><em>Deterministic sample data for the visual lab — not a live production feed.</em></p>
+
+### How the layers connect
+
+<p align="center">
+  <img src="docs/assets/architecture.svg" alt="Oil Data Back architecture map from telemetry source through FastAPI and async data layer to insight" width="960" />
+</p>
+
+The project is intentionally easy to scan: readings enter through a versioned API boundary, become validated data, move through async persistence, and surface as an understandable insight.
+
 ## Current foundation
 
 | Layer | Role | Status |
