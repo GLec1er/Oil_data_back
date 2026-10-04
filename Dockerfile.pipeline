@@ -11,6 +11,11 @@ WORKDIR /app
 COPY requirements/pipeline.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# The JVM directory name depends on the CPU architecture (amd64 / arm64), so
+# point JAVA_HOME at a stable symlink instead of the amd64 path set above.
+RUN ln -s "$(dirname "$(dirname "$(readlink -f "$(which java)")")")" /usr/lib/jvm/default-java-home
+ENV JAVA_HOME=/usr/lib/jvm/default-java-home
+
 # Resolve the Kafka connector once at build time so containers start offline.
 RUN python -c "from pyspark.sql import SparkSession; \
 SparkSession.builder.master('local[1]') \
