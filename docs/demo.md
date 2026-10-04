@@ -11,13 +11,18 @@ The interactive lab on the [overview page](index.html) is a deterministic, clien
 
 ## Why it is simulated
 
-The repository currently contains the FastAPI application shell and async database foundation, but not a production telemetry endpoint. The playground is therefore intentionally transparent: it demonstrates the intended user experience without fabricating a live connection.
+The playground runs entirely in the browser. The real pipeline (Kafka, Spark, Parquet marts) lives in `pipeline/` and is verified from the command line, not from this page: connecting the site to the marts is a later slice. The playground is therefore intentionally transparent: it shows the event contract without fabricating a live connection.
 
 ## Sample contract
 
 ```json
 {
+  "schema_version": 2,
+  "event_id": "sample-NORTH-07-2026-10-01T10:00:00Z",
+  "source_id": "sim-1",
   "well_id": "NORTH-07",
+  "event_time": "2026-10-01T10:00:00Z",
+  "emitted_at": "2026-10-01T10:00:02Z",
   "pressure_bar": 84.6,
   "temperature_c": 72,
   "flow_m3_h": 128,
@@ -25,4 +30,4 @@ The repository currently contains the FastAPI application shell and async databa
 }
 ```
 
-The field names are compact and transport-friendly. The final schema can add a timestamp, source identifier, quality flag, and units metadata when ingestion is implemented.
+This is the `telemetry.raw` event contract (see `pipeline/contract.py`). Schema version 2 adds the optional `pump_current_a`; version 1 events omit it and it is stored as null.

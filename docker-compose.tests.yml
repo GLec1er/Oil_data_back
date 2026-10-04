@@ -1,0 +1,9 @@
+# Unit tests need no services:   docker compose -f docker-compose.tests.yml run --rm tests
+name: oil-data-tests
+
+services:
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.tests
+    command: ["pytest", "-q"]

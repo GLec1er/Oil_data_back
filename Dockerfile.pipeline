@@ -1,0 +1,21 @@
+FROM python:3.10-slim-bookworm
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openjdk-17-jre-headless procps \
+    && rm -rf /var/lib/apt/lists/*
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+COPY requirements/pipeline.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Resolve the Kafka connector once at build time so containers start offline.
+RUN python -c "from pyspark.sql import SparkSession; \
+SparkSession.builder.master('local[1]') \
+.config('spark.jars.packages','org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1') \
+.getOrCreate().stop()"
+
+COPY pipeline /app/pipeline
+ENV DATA_DIR=/data

@@ -86,7 +86,7 @@
     <ellipse cx="778" cy="230" rx="17" ry="7" fill="none" stroke="#7dd3c0" stroke-width="2"/>
     <path d="M761 230v19c0 4 8 7 17 7s17-3 17-7v-19m-34 9c0 4 8 7 17 7s17-3 17-7" fill="none" stroke="#7dd3c0" stroke-width="2"/>
     <text x="744" y="262" fill="#e8f0eb" font-family="Georgia, serif" font-size="19">Data layer</text>
-    <text x="744" y="278" fill="#91a39f" font-family="Arial, sans-serif" font-size="10">async SQLAlchemy + Postgres</text>
+    <text x="744" y="278" fill="#91a39f" font-family="Arial, sans-serif" font-size="10">Kafka, Spark, Parquet marts</text>
   </g>
 
   <g>
@@ -101,7 +101,7 @@
 
   <line x1="52" y1="343" x2="1148" y2="343" stroke="#a6d6cc" stroke-opacity=".14"/>
   <text x="52" y="377" fill="#5c716e" font-family="Arial, sans-serif" font-size="9" font-weight="700" letter-spacing="1.4">CURRENT REPO</text>
-  <text x="52" y="400" fill="#e8f0eb" font-family="Arial, sans-serif" font-size="12">app/ · alembic/ · tests/ · docs/</text>
+  <text x="52" y="400" fill="#e8f0eb" font-family="Arial, sans-serif" font-size="12">app/ · pipeline/ · tests/ · docs/</text>
   <text x="1148" y="377" text-anchor="end" fill="#5c716e" font-family="Arial, sans-serif" font-size="9" font-weight="700" letter-spacing="1.4">NEXT SLICE</text>
-  <text x="1148" y="400" text-anchor="end" fill="#f4b860" font-family="Arial, sans-serif" font-size="12">TelemetryReading → ingest API → read API</text>
+  <text x="1148" y="400" text-anchor="end" fill="#f4b860" font-family="Arial, sans-serif" font-size="12">marts → read API → visual lab</text>
 </svg>

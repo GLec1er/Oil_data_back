@@ -1,29 +1,23 @@
-import os
-from pathlib import Path
-
-from dotenv import load_dotenv
-from pydantic import BaseSettings
-
-load_dotenv()
-
-FORMAT = "%d-%m-%Y_%H-%M"
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_URL = "http://localhost:8000"
-
-DB_HOST = os.getenv("POSTGRES_HOST")
-DB_NAME = os.getenv("POSTGRES_DB")
-DB_USER = os.getenv("POSTGRES_USER")
-DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-
-DATABASE_URL = (
-    f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}" f"@{DB_HOST}:5432/{DB_NAME}"
-)
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_title: str = ""
-    database_url: str = DATABASE_URL
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    app_title: str = "Oil Data Back"
+    postgres_host: str = "localhost"
+    postgres_port: int = 5432
+    postgres_db: str = "oil_data"
+    postgres_user: str = "oil_data"
+    postgres_password: str = ""
+
+    @property
+    def database_url(self) -> str:
+        return (
+            f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}"
+            f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+        )
 
 
 settings = Settings()
+DATABASE_URL = settings.database_url

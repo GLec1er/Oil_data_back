@@ -37,49 +37,56 @@ The playground is deliberately a front-end simulation. It makes the product dire
 
 The project is intentionally easy to scan: readings enter through a versioned API boundary, become validated data, move through async persistence, and surface as an understandable insight.
 
-## Current foundation
+## What is in the repository
 
-| Layer | Role | Status |
+| Part | Role | Status |
 | --- | --- | --- |
-| FastAPI | HTTP application shell and OpenAPI surface | Foundation |
-| `app/api` | Versioned router and validation boundary | Growing |
-| SQLAlchemy async | PostgreSQL-ready data access | Foundation |
-| Alembic | Schema migration workflow | Wired |
-| Docker | Reproducible runtime image | Included |
-| `docs/` | Interactive project showcase | Ready |
+| `pipeline/` | Kafka → Spark → Bronze / Silver / hourly + daily Parquet marts, replay, verification | Working, tested |
+| `app/` | FastAPI shell with `GET /api/v1/health`, async SQLAlchemy foundation | Foundation |
+| `docs/` | Interactive GitHub Pages showcase | Ready |
+| `design/specs/` | Design documents | Reference |
 
 ## Quick start
 
+Run the telemetry pipeline (needs Docker):
+
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+make up         # Kafka + Spark processors
+make scenario   # duplicates, a late schema-v2 event, bad input, restarts, replays
+make verify     # observed vs expected counts and aggregates; nonzero exit on mismatch
+make down       # stop, keeping Kafka, Parquet and checkpoint volumes
+```
+
+Run the tests and the API shell without Docker:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements/dev.txt
+pytest
 uvicorn app.main:app --reload
 ```
 
-> Note: the current backend snapshot still needs a concrete endpoint router in `app/api/routers.py` before the application can boot. The static showcase is independent from this and works without the backend or a database.
-
-The interactive documentation does not require Python or a database:
+The static showcase needs neither Python nor a database:
 
 ```bash
 python3 -m http.server 8080 --directory docs
 ```
 
-Then open `http://localhost:8080`.
-
 ## Project map
 
 ```text
-app/
-├── api/          # versioned HTTP boundary and validators
-├── core/         # settings, database engine, shared base
-├── crud/         # data-access operations (next layer to expand)
-├── models/       # SQLAlchemy models
-└── schemas/      # API schemas
-alembic/          # migrations configuration
-tests/            # pytest suite
-docs/             # interactive GitHub Pages showcase
+app/          # FastAPI shell, settings, async database foundation
+pipeline/     # contract, generator, Spark jobs, transform, snapshots, verify, CLI
+tests/        # unit tests and an in-process recovery scenario
+design/       # specs
+docs/         # GitHub Pages showcase
+alembic/      # migrations configuration
+scripts/      # end-to-end scenario
 ```
+
+## Scale limits
+
+Each materialization rereads all of Bronze, which favors clear late-event correction and replay over throughput. It is sized for a local fixture, not production volume. Kafka retention must exceed any planned processor outage.
 
 ## Documentation
 
@@ -87,10 +94,11 @@ docs/             # interactive GitHub Pages showcase
 - [Architecture notes](docs/architecture.md)
 - [Playground guide](docs/demo.md)
 - [Development notes](docs/development.md)
+- [Pipeline design](design/specs/2026-10-03-telemetry-pipeline-design.md)
 
 ## Direction
 
-The next useful slice is a real telemetry contract: a time-series model, ingestion endpoint, filtering by well and time range, and a small read API that can feed the visual lab. The docs keep this roadmap explicit so the repository is easy to review and easy to extend.
+Next: a read API over the marts through `active.json`, then connecting the visual lab to real aggregates.
 
 ## License
 

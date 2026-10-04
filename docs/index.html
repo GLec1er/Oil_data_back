@@ -93,7 +93,7 @@
 
       <section class="signal-strip shell" aria-label="Project qualities">
         <div class="strip-item"><span class="strip-index">01</span><span><strong>Async-first</strong><small>built for flowing data</small></span></div>
-        <div class="strip-item"><span class="strip-index">02</span><span><strong>PostgreSQL-ready</strong><small>persistence with room to grow</small></span></div>
+        <div class="strip-item"><span class="strip-index">02</span><span><strong>Replayable pipeline</strong><small>Kafka, Spark and Parquet marts</small></span></div>
         <div class="strip-item"><span class="strip-index">03</span><span><strong>API-shaped</strong><small>clear boundaries from day one</small></span></div>
         <div class="strip-item"><span class="strip-index">04</span><span><strong>Reviewable</strong><small>small surface, honest roadmap</small></span></div>
       </section>
@@ -150,7 +150,12 @@
             </div>
             <div class="payload-head"><span class="panel-kicker">SAMPLE PAYLOAD</span><button id="copy-payload" class="copy-button" type="button">Copy JSON <span>⧉</span></button></div>
             <pre id="payload" class="payload"><code>{
+  "schema_version": 2,
+  "event_id": "sample-NORTH-07-2026-10-01T10:00:00Z",
+  "source_id": "sim-1",
   "well_id": "NORTH-07",
+  "event_time": "2026-10-01T10:00:00Z",
+  "emitted_at": "2026-10-01T10:00:02Z",
   "pressure_bar": 84.6,
   "temperature_c": 72,
   "flow_m3_h": 128,
@@ -172,7 +177,7 @@
           <div class="arch-connector"><span>ingest</span><i></i></div>
           <div class="arch-node arch-api"><span class="node-number">02</span><span class="node-icon">⌘</span><h3>FastAPI</h3><p>versioned HTTP boundary</p></div>
           <div class="arch-connector"><span>normalize</span><i></i></div>
-          <div class="arch-node arch-data"><span class="node-number">03</span><span class="node-icon">◒</span><h3>Data layer</h3><p>async SQLAlchemy + PostgreSQL</p></div>
+          <div class="arch-node arch-data"><span class="node-number">03</span><span class="node-icon">◒</span><h3>Pipeline</h3><p>Kafka → Spark → Parquet marts</p></div>
           <div class="arch-connector"><span>explain</span><i></i></div>
           <div class="arch-node arch-view"><span class="node-number">04</span><span class="node-icon">◌</span><h3>Insight</h3><p>clean data products</p></div>
         </div>

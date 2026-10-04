@@ -70,7 +70,12 @@
     state.classList.toggle("warning", isWarning);
 
     payload.innerHTML = `<code>${JSON.stringify({
+      schema_version: 2,
+      event_id: `sample-${well}-2026-10-01T10:00:00Z`,
+      source_id: "sim-1",
       well_id: well,
+      event_time: "2026-10-01T10:00:00Z",
+      emitted_at: "2026-10-01T10:00:02Z",
       pressure_bar: Number(values.pressure.toFixed(1)),
       temperature_c: values.temperature,
       flow_m3_h: values.flow,

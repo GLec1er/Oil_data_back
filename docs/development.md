@@ -1,37 +1,42 @@
 # Development notes
 
-## Run the backend
+## Run the API shell
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements/dev.txt
+cp .env.example .env
 uvicorn app.main:app --reload
 ```
 
-The database settings are read from environment variables in `app/core/config.py`. For a local PostgreSQL-backed run, provide `POSTGRES_HOST`, `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD`.
+`GET /api/v1/health` returns `{"status": "ok"}`. Database settings come from `POSTGRES_*` variables (see `.env.example`); `.env` is git-ignored.
 
-> Current snapshot: `app/api/routers.py` calls `include_router()` without a concrete endpoint router, so `uvicorn` will raise during import until the first API router is added. This docs-only pass leaves that backend behavior untouched.
+## Run the pipeline
 
-## Run the showcase
-
-The showcase is plain HTML, CSS, and JavaScript. No build step is required:
+Docker Compose runs Kafka (KRaft), the raw Spark query and the materializer. Data survives restarts in the `kafka-data` and `pipeline-data` volumes.
 
 ```bash
-python3 -m http.server 8080 --directory docs
+make up         # start the stack
+make scenario   # duplicates, late v2 event, malformed input, restarts, two replays
+make verify     # compare the active snapshot with the expected result
+make replay     # rebuild the marts from Bronze
+make down       # stop, keeping all volumes
 ```
 
-Open `http://localhost:8080` and use the **Playground** section.
+Publish your own data with `docker compose run --rm cli publish --scenario faults --count 8`
+(scenarios: `normal`, `duplicates`, `late`, `v2`, `faults`). Add `-v` to `docker compose down` only when you really want to delete the data.
 
-## Project checks
+## Checks
 
 ```bash
-pytest
-flake8 app tests
+pip install -r requirements/dev.txt
+pytest          # unit tests and the in-process recovery scenario; no Docker needed
+ruff check .
 ```
 
-The GitHub Pages workflow publishes only `docs/`. Backend tests and linting remain separate from the static showcase so the public page stays fast and dependency-free.
+`tests.yml` runs both on every push. The Pages workflow publishes only `docs/`.
 
-## Publishing
+## Publishing the showcase
 
-`.github/workflows/pages.yml` publishes the `docs/` directory on pushes to `main`. In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions** once, then the workflow will own future deployments.
+`.github/workflows/pages.yml` publishes `docs/` on pushes to `main`. In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions** once.
