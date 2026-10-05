@@ -124,3 +124,22 @@ def test_persistently_missing_files_become_unavailable(marts_dir):
     shutil.rmtree(marts_dir / "snapshots")
     with pytest.raises(marts.SnapshotUnavailable):
         marts.read_table(marts_dir, "hourly")
+
+
+def test_cors_allows_the_static_site_origin(client):
+    origin = "http://localhost:8080"
+    response = client.get("/api/v1/wells", headers={"Origin": origin})
+    assert response.headers["access-control-allow-origin"] == origin
+
+
+def test_cors_does_not_allow_unknown_origins(client):
+    response = client.get("/api/v1/wells", headers={"Origin": "https://evil.example"})
+    assert "access-control-allow-origin" not in response.headers
+
+
+def test_cors_rejects_non_get_preflight(client):
+    response = client.options(
+        "/api/v1/wells",
+        headers={"Origin": "http://localhost:8080", "Access-Control-Request-Method": "DELETE"},
+    )
+    assert response.status_code == 400

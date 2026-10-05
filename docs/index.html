@@ -28,6 +28,7 @@
       <nav class="nav-links" aria-label="Primary navigation">
         <a class="active" href="#top">Overview</a>
         <a href="#playground">Playground</a>
+        <a href="#live">Live data</a>
         <a href="#architecture">Architecture</a>
         <a href="development.md">Docs</a>
       </nav>
@@ -107,7 +108,7 @@
 
         <div class="lab-grid">
           <aside class="control-panel panel">
-            <div class="panel-header"><span class="panel-kicker">INPUT SIGNALS</span><span class="live-label"><span class="status-dot"></span> LIVE SAMPLE</span></div>
+            <div class="panel-header"><span class="panel-kicker">INPUT SIGNALS</span><span class="live-label"><span class="status-dot"></span> SIMULATED</span></div>
             <div class="control-block">
               <div class="control-label"><label for="pressure">Pressure</label><output id="pressure-output">84.6 bar</output></div>
               <input id="pressure" type="range" min="40" max="140" value="84.6" step="0.1" data-unit="bar" />
@@ -166,9 +167,64 @@
         </div>
       </section>
 
+      <section class="section shell" id="live">
+        <div class="section-heading">
+          <p class="eyebrow">LIVE DATA / 03</p>
+          <h2>Real marts,<br /><em>over HTTP.</em></h2>
+          <p>This panel reads the hourly and daily marts from the Oil Data read API. Point it at a running API; without one, the playground above stays a simulation.</p>
+        </div>
+
+        <div class="live-grid">
+          <aside class="live-controls panel">
+            <div class="panel-header"><span class="panel-kicker">CONNECTION</span><span id="live-state" class="output-state" role="status">CONNECTING</span></div>
+            <form id="live-form" class="live-form" novalidate>
+              <label for="live-api">API address</label>
+              <div class="live-api-row">
+                <input id="live-api" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http://localhost:8000" />
+                <button class="button button-primary" type="submit">Connect</button>
+              </div>
+            </form>
+            <p id="live-message" class="live-message" hidden></p>
+            <div class="control-divider"></div>
+            <div class="live-field"><label for="live-well">Well</label><select id="live-well" disabled><option>—</option></select></div>
+            <div class="live-field"><label for="live-granularity">Period</label><select id="live-granularity"><option value="hourly">Hourly</option><option value="daily">Daily</option></select></div>
+            <div class="live-field"><label for="live-metric">Metric</label><select id="live-metric"><option value="avg_pressure_bar">Avg pressure</option><option value="avg_temperature_c">Avg temperature</option><option value="avg_flow_m3_h">Avg flow rate</option><option value="max_water_cut_pct">Max water cut</option></select></div>
+            <div class="control-divider"></div>
+            <dl class="live-facts">
+              <div><dt>Snapshot</dt><dd id="live-snapshot">—</dd></div>
+              <div><dt>Published</dt><dd id="live-published">—</dd></div>
+              <div><dt>Rows for well</dt><dd id="live-rows">—</dd></div>
+              <div><dt>Checked</dt><dd id="live-checked">—</dd></div>
+            </dl>
+          </aside>
+
+          <div class="output-panel panel">
+            <div class="panel-header"><span class="panel-kicker">MART PREVIEW · UTC</span><span class="output-state">REFRESHES EVERY 15 S</span></div>
+            <div class="live-headline"><span id="live-value-label" class="mini-label">Avg pressure · latest period</span><strong id="live-value">—</strong></div>
+            <div class="chart-wrap lab-chart-wrap">
+              <svg class="chart" viewBox="0 0 700 260" role="img" aria-label="Chart of the selected mart metric over time">
+                <g class="chart-grid"><line x1="0" y1="36" x2="700" y2="36" /><line x1="0" y1="98" x2="700" y2="98" /><line x1="0" y1="160" x2="700" y2="160" /><line x1="0" y1="222" x2="700" y2="222" /></g>
+                <g id="live-grid-labels" class="chart-labels"></g>
+                <path id="live-area" class="chart-area aqua-area" d="" />
+                <polyline id="live-line" class="chart-line aqua-line" points="" />
+                <g id="live-dots"></g>
+              </svg>
+              <p id="live-empty" class="live-empty">No data to show yet.</p>
+              <div id="live-axis" class="chart-axis"></div>
+            </div>
+            <div class="live-table-wrap">
+              <table class="live-table">
+                <thead><tr><th>Period</th><th>Readings</th><th>Pressure, bar</th><th>Temp, °C</th><th>Flow, m³/h</th><th>Water cut max, %</th></tr></thead>
+                <tbody id="live-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="section section-architecture shell" id="architecture">
         <div class="section-heading compact-heading">
-          <p class="eyebrow">SYSTEM SHAPE / 03</p>
+          <p class="eyebrow">SYSTEM SHAPE / 04</p>
           <h2>A small core.<br /><em>A clear path.</em></h2>
           <p>The repository is intentionally legible: each layer has one job, and the next product slice is easy to see.</p>
         </div>
@@ -185,7 +241,7 @@
       </section>
 
       <section class="docs-section shell">
-        <div class="docs-intro"><p class="eyebrow">FIELD NOTES / 04</p><h2>Everything you need<br />to <em>keep moving.</em></h2></div>
+        <div class="docs-intro"><p class="eyebrow">FIELD NOTES / 05</p><h2>Everything you need<br />to <em>keep moving.</em></h2></div>
         <div class="docs-grid">
           <a class="doc-card" href="architecture.md"><span class="doc-number">01 / ARCHITECTURE</span><strong>How the pieces fit.</strong><span class="doc-arrow">↗</span></a>
           <a class="doc-card" href="demo.md"><span class="doc-number">02 / PLAYGROUND</span><strong>What the demo proves.</strong><span class="doc-arrow">↗</span></a>
@@ -200,5 +256,6 @@
       <a href="https://github.com/GLec1er/Oil_data_back" target="_blank" rel="noreferrer">View repository <span>↗</span></a>
     </footer>
     <script src="app.js"></script>
+    <script src="live.js"></script>
   </body>
 </html>

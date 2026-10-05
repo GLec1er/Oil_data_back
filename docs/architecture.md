@@ -30,7 +30,7 @@ Reads only Parquet and `active.json` — no transformation code — and exits no
 `app/` serves the marts over HTTP: `/api/v1/snapshot`, `/wells` and `/marts/{hourly|daily}`. It resolves `active.json` per request, reads only Parquet (no Spark, no pipeline imports) and retries once if a publish prunes the snapshot it just resolved. Responses are tagged with their `snapshot_id`; before the first publish it answers 503. Blocking reads run in FastAPI's threadpool. The async SQLAlchemy foundation stays unused until something needs a relational store. 
 
 ### 7. Static site
-`docs/` is a standalone static site published through GitHub Pages; it does not call the API yet.
+`docs/` is a standalone static site published through GitHub Pages; its **Live data** section (`docs/live.js`) reads the read API from the browser, so the mart preview shows real aggregates while the playground remains a labelled simulation. The page renders API values only through `textContent`/SVG text and accepts only `http(s)` addresses. The API allows cross-origin `GET` from a configurable list of origins (`CORS_ORIGINS`).
 
 ## Scale limits
 

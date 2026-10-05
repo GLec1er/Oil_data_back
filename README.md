@@ -14,10 +14,11 @@ The [GitHub Pages showcase](https://glec1er.github.io/Oil_data_back/) is the qui
 
 - an interactive signal explorer with pressure, temperature, flow, and water-cut controls;
 - a deterministic sample payload generator with copy-to-clipboard;
+- a live panel that reads real mart aggregates from the read API;
 - a visual architecture map for the current backend layers;
 - a responsive, dependency-free interface that works as a static GitHub Pages site.
 
-The playground is deliberately a front-end simulation. It makes the product direction visible without pretending that production telemetry already exists.
+The playground is deliberately a front-end simulation and is labelled as such. The **Live data** panel below it is the real thing: it reads the hourly and daily marts from the read API when you run one (see [development notes](docs/development.md#connect-the-site-to-the-api)).
 
 ## Visual map
 
@@ -43,7 +44,7 @@ The project is intentionally easy to scan: readings enter through a versioned AP
 | --- | --- | --- |
 | `pipeline/` | Kafka → Spark → Bronze / Silver / hourly + daily Parquet marts, replay, verification | Working, tested |
 | `app/` | FastAPI read API over the marts (`/snapshot`, `/wells`, `/marts/{hourly\|daily}`) and `GET /api/v1/health` | Working, tested |
-| `docs/` | Interactive GitHub Pages showcase | Ready |
+| `docs/` | GitHub Pages showcase: simulated playground plus a live panel that reads the API | Working |
 | `design/specs/` | Design documents | Reference |
 
 ## Quick start
@@ -99,7 +100,7 @@ Each materialization rereads all of Bronze, which favors clear late-event correc
 
 ## Direction
 
-Next: connect the visual lab to the read API so the site shows real aggregates.
+Next: authentication for the API and serving it over HTTPS, so the published site can show a hosted pipeline.
 
 ## License
 

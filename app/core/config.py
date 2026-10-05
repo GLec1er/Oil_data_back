@@ -13,6 +13,14 @@ class Settings(BaseSettings):
     postgres_user: str = "oil_data"
     postgres_password: str = ""
     marts_dir: Path = Path("data/marts")
+    # Comma-separated browser origins allowed to read the API (the static site).
+    cors_origins: str = (
+        "http://localhost:8080,http://127.0.0.1:8080,https://glec1er.github.io"
+    )
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
     @property
     def database_url(self) -> str:
