@@ -21,11 +21,28 @@ make up         # start the stack
 make scenario   # duplicates, late v2 event, malformed input, restarts, two replays
 make verify     # compare the active snapshot with the expected result
 make replay     # rebuild the marts from Bronze
+make api        # read API on http://localhost:8000 (API_PORT=8010 make api for another port)
 make down       # stop, keeping all volumes
 ```
 
 Publish your own data with `docker compose run --rm cli publish --scenario faults --count 8`
 (scenarios: `normal`, `duplicates`, `late`, `v2`, `faults`). Add `-v` to `docker compose down` only when you really want to delete the data.
+
+## Read API
+
+The API reads the published marts through `active.json` from a read-only mount of the pipeline volume. Locally, set `MARTS_DIR` to a marts directory.
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /api/v1/snapshot` | Active snapshot id, publication time, row counts |
+| `GET /api/v1/wells` | Wells present in the marts |
+| `GET /api/v1/marts/{hourly\|daily}` | Mart rows; filters `well_id`, `start` (inclusive), `end` (exclusive), paging `limit` (1–1000, default 100) and `offset` |
+
+Rows are ordered by period then well. Naive timestamps are read as UTC. Every response carries the `snapshot_id` it was read from, so a client can tell whether two reads saw the same data. Before the first snapshot is published the API answers `503` with `Retry-After: 15`. Interactive docs: `/docs`.
+
+```bash
+curl "localhost:8000/api/v1/marts/hourly?well_id=NORTH-07&start=2026-10-01T00:00:00Z"
+```
 
 ## Checks
 

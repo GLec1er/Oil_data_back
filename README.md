@@ -42,7 +42,7 @@ The project is intentionally easy to scan: readings enter through a versioned AP
 | Part | Role | Status |
 | --- | --- | --- |
 | `pipeline/` | Kafka → Spark → Bronze / Silver / hourly + daily Parquet marts, replay, verification | Working, tested |
-| `app/` | FastAPI shell with `GET /api/v1/health`, async SQLAlchemy foundation | Foundation |
+| `app/` | FastAPI read API over the marts (`/snapshot`, `/wells`, `/marts/{hourly\|daily}`) and `GET /api/v1/health` | Working, tested |
 | `docs/` | Interactive GitHub Pages showcase | Ready |
 | `design/specs/` | Design documents | Reference |
 
@@ -54,6 +54,7 @@ Run the telemetry pipeline (needs Docker):
 make up         # Kafka + Spark processors
 make scenario   # duplicates, a late schema-v2 event, bad input, restarts, replays
 make verify     # observed vs expected counts and aggregates; nonzero exit on mismatch
+make api        # read API: http://localhost:8000/docs (API_PORT=8010 make api if 8000 is busy)
 make down       # stop, keeping Kafka, Parquet and checkpoint volumes
 ```
 
@@ -75,7 +76,7 @@ python3 -m http.server 8080 --directory docs
 ## Project map
 
 ```text
-app/          # FastAPI shell, settings, async database foundation
+app/          # FastAPI read API over the marts, settings, async DB foundation
 pipeline/     # contract, generator, Spark jobs, transform, snapshots, verify, CLI
 tests/        # unit tests and an in-process recovery scenario
 design/       # specs
@@ -98,7 +99,7 @@ Each materialization rereads all of Bronze, which favors clear late-event correc
 
 ## Direction
 
-Next: a read API over the marts through `active.json`, then connecting the visual lab to real aggregates.
+Next: connect the visual lab to the read API so the site shows real aggregates.
 
 ## License
 

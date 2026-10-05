@@ -1,6 +1,6 @@
 # Architecture notes
 
-Oil Data Back has two parts: a small FastAPI shell (`app/`) and a replayable telemetry pipeline (`pipeline/`). The visual map on the [overview page](index.html) is the short version; this page explains what each boundary owns. The full design lives in [`design/specs`](https://github.com/glec1er/Oil_data_back/tree/main/design/specs).
+Oil Data Back has two parts: a read API (`app/`) and a replayable telemetry pipeline (`pipeline/`). The visual map on the [overview page](index.html) is the short version; this page explains what each boundary owns. The full design lives in [`design/specs`](https://github.com/glec1er/Oil_data_back/tree/main/design/specs).
 
 ## The data flow
 
@@ -26,8 +26,11 @@ Every micro-batch rebuilds all datasets from all committed Bronze files, so a la
 ### 5. Verification (`pipeline/verify.py`)
 Reads only Parquet and `active.json` — no transformation code — and exits nonzero if counts or aggregates differ from the expectation.
 
-### 6. FastAPI shell and the static site
-`app/` exposes `GET /api/v1/health` and keeps the async SQLAlchemy foundation for a later read API over the marts. `docs/` is a standalone static site published through GitHub Pages.
+### 6. Read API (`app/services/marts.py`)
+`app/` serves the marts over HTTP: `/api/v1/snapshot`, `/wells` and `/marts/{hourly|daily}`. It resolves `active.json` per request, reads only Parquet (no Spark, no pipeline imports) and retries once if a publish prunes the snapshot it just resolved. Responses are tagged with their `snapshot_id`; before the first publish it answers 503. Blocking reads run in FastAPI's threadpool. The async SQLAlchemy foundation stays unused until something needs a relational store. 
+
+### 7. Static site
+`docs/` is a standalone static site published through GitHub Pages; it does not call the API yet.
 
 ## Scale limits
 

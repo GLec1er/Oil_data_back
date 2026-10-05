@@ -67,6 +67,17 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
 
+  api:
+    build: .
+    image: oil-data-api:local
+    environment:
+      MARTS_DIR: /data/marts
+    volumes:
+      - pipeline-data:/data:ro  # read-only: the API never writes marts
+    ports:
+      - "${API_PORT:-8000}:8000"
+    restart: unless-stopped
+
   cli:
     <<: *pipeline
     profiles: ["tools"]
